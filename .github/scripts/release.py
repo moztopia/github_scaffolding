@@ -130,20 +130,32 @@ def update_changelog_file(content, dry_run=False):
             break
     
     if insert_idx != -1:
+        # Check if line before is empty, if not insert one
+        if insert_idx > 0 and lines[insert_idx - 1].strip() != "":
+            lines.insert(insert_idx, "")
+            insert_idx += 1
+            
         lines.insert(insert_idx, content.strip()) 
-        # Add an empty line for spacing
+        # Add an empty line for spacing after
         lines.insert(insert_idx + 1, "")
     else:
-        # Append logic if no versions exist yet, but typically we want it after the header
-        # Let's search for the end of the header paragraph (first double newline)
-        # Simple fallback: Append to end if no '##' found
-        # Or better: After line 6 (standard header length)
-        # Let's just prepend (after title) for now if no sections found
+        # Append logic
+        # Start searching for where to append (after header text)
+        start_append_idx = len(lines)
         if len(lines) > 5 and lines[0].startswith('# '):
-             lines.insert(6, content.strip())
-             lines.insert(7, "")
-        else:
-             lines.append(content.strip())
+             # Heuristic: skip header block. 
+             # Let's assume header block ends when we see a non-empty line followed by empty line, or just hardcode for now
+             # Actually, simpler: Insert after the specific preamble
+             # But if we couldn't find '## ', we are likely at the start.
+             # Let's just append to the end, but ensure blank line before.
+             pass
+        
+        # Ensure preceeding blank line
+        if len(lines) > 0 and lines[-1].strip() != "":
+            lines.append("")
+        
+        lines.append(content.strip())
+        lines.append("") # Trailing newline
     
     new_full_content = '\n'.join(lines)
     
