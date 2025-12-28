@@ -43,7 +43,7 @@ jobs:
 
           version=$(cat VERSION)
 
-          git add VERSION
+          git add VERSION CHANGELOG.md
           git commit -m "chore: release $version"
           git tag $version
           git push origin HEAD --tags
